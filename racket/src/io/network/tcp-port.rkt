@@ -103,31 +103,31 @@
 
 (define/who (tcp-copy-file dst-p path
                            [start 0]
-                           [end (file-size path)])
+                           [end #f])
   (define op (->core-output-port dst-p))
   (check who tcp-output-port? op)
   (check who path-string? path)
   (check who exact-nonnegative-integer? start)
-  (check who exact-positive-integer? end)
-  (unless (< start max-file-offset-for-platform)
-    (raise-argument-error who (string-append "(</c #x" (number->string max-file-offset-for-platform 16) ")") 2 dst-p path start end))
-  ;; TODO(bogdan): should this be relaxed to (<= end (+ max-... chunksize))?
-  (unless (<= end max-file-offset-for-platform)
-    (raise-argument-error who (string-append "(<=/c #x" (number->string max-file-offset-for-platform 16) ")") 3 dst-p path start end))
-  (unless (< start end)
-    (raise-arguments-error who "start must be less than end" "start" start "end" end))
-
-  (define size (file-size path))
-  (unless (<= end size)
-    (raise-argument-error who (string-append "(<=/c " (number->string size) ")") 3 dst-p path start end))
+  (check who #:or-false exact-positive-integer? end)
 
   (define chunksize #x7FFFFFFD)
+  (define size (file-size path))
+  (define the-end (or end size))
+  (unless (<= the-end size)
+    (raise-argument-error who (string-append "(<=/c " (number->string size) ")") 3 dst-p path start the-end))
+  (unless (< start max-file-offset-for-platform)
+    (raise-argument-error who (string-append "(</c #x" (number->string max-file-offset-for-platform 16) ")") 2 dst-p path start the-end))
+  (unless (<= the-end (+ chunksize max-file-offset-for-platform))
+    (raise-argument-error who (string-append "(<=/c #x" (number->string max-file-offset-for-platform 16) ")") 3 dst-p path start the-end))
+  (unless (< start the-end)
+    (raise-arguments-error who "start must be less than end" "start" start "end" the-end))
+
   (define ip (->core-input-port (open-input-file path)))
   (define dst-fd (fd-output-port-fd op))
   (define src-fd (fd-input-port-fd ip))
   (define status (rktio_make_sendfile_status rktio))
   (let loop ([offset start]
-             [nbytes (- end start)])
+             [nbytes (- the-end start)])
     (define sent
       (rktio_sendfile rktio dst-fd src-fd offset (min nbytes chunksize) status))
     (cond
