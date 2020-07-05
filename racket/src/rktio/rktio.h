@@ -288,7 +288,7 @@ RKTIO_EXTERN
 rktio_sendfile_status_t *rktio_make_sendfile_status(rktio_t *rktio);
 
 RKTIO_EXTERN
-void rktio_sendfile_status_free(rktio_t *rktio, rktio_sendfile_status_t *progress);
+void rktio_sendfile_status_free(rktio_t *rktio, rktio_sendfile_status_t *status);
 
 RKTIO_EXTERN_ERR(RKTIO_WRITE_ERROR)
 intptr_t rktio_sendfile(rktio_t *rktio,
