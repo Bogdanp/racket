@@ -162,6 +162,8 @@ jobs:
     - name: Installing
       working-directory: ./racket/src
       run: make -j  $((cpus+1)) install
+    - name: Copying src/ into distro # ChezScheme build is needed by build-ios
+      run: cp -r racket/src racketcs/
     - name: Tarballing
       working-directory: ${{ github.workspace }}
       run: tar -cvjf racketcs-macos-x64_git${{ github.sha}}.tar.bz2 racketcs
@@ -192,7 +194,7 @@ jobs:
             --host=aarch64-apple-darwin \
             --enable-ios=iPhoneOS \
             --enable-racket=${{ github.workspace }}/host-racket/bin/racket \
-            --enable-scheme=${{ github.workspace }}/host-racket/src/build/cs/c
+            --enable-scheme=${{ github.workspace }}/host-racket/src/cs/c
           make
           make install
 
