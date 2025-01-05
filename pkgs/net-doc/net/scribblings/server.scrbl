@@ -14,13 +14,11 @@
 @defmodule[net/server]{The @racketmodname[net/server] library provides
 support for running general-purpose networked servers.}
 
-@defproc[(start-server [handle (-> input-port? output-port? any)]
+@defproc[(start-server [listener evt?]
+                       [handle (-> input-port? output-port? any)]
                        [#:max-concurrent max-concurrent
                                          (or/c +inf.0 natural-number/c)
                                          +inf.0]
-                       [#:listener listener
-                                      evt?
-                                      (tcp-listen 8080 4 #t "localhost")]
                        [#:accept-proc accept
                                       (-> listener? (values input-port? output-port?))
                                       tcp-accept]

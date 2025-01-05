@@ -9,17 +9,15 @@
   [run-server (server-proc/c void?)]))
 
 (define (server-proc/c res/c)
-  (->* ((-> input-port? output-port? any))
+  (->* (evt? (-> input-port? output-port? any))
        (#:max-concurrent   (or/c +inf.0 natural-number/c)
-        #:listener         evt?
         #:accept-proc      (-> any/c (values input-port? output-port?))
         #:close-proc       (-> any/c void?)
         #:timeout-evt-proc (-> thread? input-port? output-port? boolean? evt?))
        res/c))
 
-(define (start-server handle
+(define (start-server listener handle
                       #:max-concurrent   [max-concurrent +inf.0]
-                      #:listener         [listener (tcp-listen 8080 4 #t "localhost")]
                       #:accept-proc      [accept tcp-accept]
                       #:close-proc       [close tcp-close]
                       #:timeout-evt-proc [make-timeout-evt (λ (_thd _in _out _break-sent?) never-evt)])
