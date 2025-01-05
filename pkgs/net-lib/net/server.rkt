@@ -1,7 +1,9 @@
 #lang racket/base
 
 (require racket/contract
-         racket/tcp)
+         racket/tcp
+         (only-in racket/unix-socket
+                  unix-socket-listener?))
 
 (provide
  (contract-out
@@ -9,7 +11,7 @@
   [run-server (server-proc/c void?)]))
 
 (define (server-proc/c res/c)
-  (->* (evt? (-> input-port? output-port? any))
+  (->* ((or/c evt? channel? unix-socket-listener?) (-> input-port? output-port? any))
        (#:max-concurrent   (or/c +inf.0 natural-number/c)
         #:accept-proc      (-> any/c (values input-port? output-port?))
         #:close-proc       (-> any/c void?)

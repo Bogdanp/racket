@@ -135,7 +135,7 @@ Here is an implementation of a TCP echo server using
   (code:line)
 
   (define stop
-    (start-server "127.0.0.1" 9000 echo))
+    (start-server (tcp-listen 9000 4 #t "127.0.0.1") echo))
 
   (code:line)
   (define-values (in out)
@@ -181,7 +181,7 @@ add TLS support:
   (code:line)
 
   (define stop
-    (start-server "127.0.0.1" 9000 (make-tls-echo server-ctx)))
+    (start-server (tcp-listen 9000 4 #t "127.0.0.1") (make-tls-echo server-ctx)))
 
   (code:line)
   (define-values (in out)
@@ -218,13 +218,10 @@ Sockets"] for details on the procedures used here.}
   (define path "/tmp/server.sock")
   (define stop
     (start-server
-     #:listen-proc (λ (port backlog reuse? host)
-                     (unless (unix-socket-path? host)
-                       (error 'start-server "invalid socket path: ~e" host))
-                     (listener host (unix-socket-listen host backlog)))
      #:accept-proc unix-socket-accept
      #:close-proc (λ (l) (delete-file (listener-path l)))
-     path 0 (make-tls-echo server-ctx)))
+     (listener path (unix-socket-listen path 4))
+     (make-tls-echo server-ctx)))
   (code:line)
 
   (define-values (in out)
@@ -249,10 +246,10 @@ process and does not rely on any networking machinery:
   (define ch (make-channel))
   (define stop
     (start-server
-     #:listen-proc (λ (port backlog reuse? host) ch)
      #:accept-proc (λ (ports) (apply values ports))
      #:close-proc void
-     "127.0.0.1" 0 echo))
+     ch
+     echo))
   (code:line)
 
   (define-values (client-in server-out) (make-pipe))
