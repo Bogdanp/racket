@@ -134,9 +134,12 @@ Here is an implementation of a TCP echo server using
         (loop))))
   (code:line)
 
-  (define stop
-    (start-server (tcp-listen 9000 4 #t "127.0.0.1") echo))
+  (define listener
+    (tcp-listen 9000 4 #t "127.0.0.1"))
+  (code:line)
 
+  (define stop
+    (start-server listener echo))
   (code:line)
   (define-values (in out)
     (tcp-connect "127.0.0.1" 9000))
