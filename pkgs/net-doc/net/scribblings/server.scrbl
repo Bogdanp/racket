@@ -72,7 +72,7 @@ support for running general-purpose networked servers.}
   @racket[accept] would not block; the synchronization result of the
   listener must be a value that can be passed to @racket[accept].
 
-  @history[#:added "1.1"]
+  @history[#:added "1.3"]
 }
 
 @defproc[(run-server [host (or/c #f string?)]
@@ -104,7 +104,7 @@ support for running general-purpose networked servers.}
   thread until a break is received.  Before returning, it stops the
   spawned server.  The server is run with breaks disabled.
 
-  @history[#:added "1.1"]
+  @history[#:added "1.3"]
 }
 
 @section{Examples}
