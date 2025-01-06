@@ -2,8 +2,7 @@
 
 (define collection 'multi)
 (define deps '("srfi-lite-lib"
-               "base"
-               "unix-socket-lib"))
+               "base"))
 
 (define pkg-desc "implementation (no documentation) part of \"net\"")
 

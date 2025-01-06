@@ -75,21 +75,11 @@ support for running general-purpose networked servers.}
   @history[#:added "1.3"]
 }
 
-@defproc[(run-server [host (or/c #f string?)]
-                     [port listen-port-number?]
+@defproc[(run-server [listener evt?]
                      [handle (-> input-port? output-port? any)]
-                     [#:reuse? reuse? any/c #t]
-                     [#:max-allow-wait max-allow-wait exact-nonnegative-integer? 4]
                      [#:max-concurrent max-concurrent
                                        (or/c +inf.0 exact-positive-integer?)
                                        +inf.0]
-                     [#:listen-proc listen
-                                    (-> listen-port-number?
-                                        exact-nonnegative-integer?
-                                        any/c
-                                        (or/c #f string?)
-                                        (and/c listener? evt?))
-                                    tcp-listen]
                      [#:accept-proc accept
                                     (-> listener? (values input-port? output-port?))
                                     tcp-accept]
@@ -135,7 +125,7 @@ Here is an implementation of a TCP echo server using
   (code:line)
 
   (define listener
-    (tcp-listen 9000 4 #t "127.0.0.1"))
+    (tcp-listen 9000 512 #t "127.0.0.1"))
   (code:line)
 
   (define stop
@@ -184,7 +174,7 @@ add TLS support:
   (code:line)
 
   (define stop
-    (start-server (tcp-listen 9000 4 #t "127.0.0.1") (make-tls-echo server-ctx)))
+    (start-server (tcp-listen 9000 512 #t "127.0.0.1") (make-tls-echo server-ctx)))
 
   (code:line)
   (define-values (in out)
@@ -223,7 +213,7 @@ Sockets"] for details on the procedures used here.}
     (start-server
      #:accept-proc unix-socket-accept
      #:close-proc (λ (l) (delete-file (listener-path l)))
-     (listener path (unix-socket-listen path 4))
+     (listener path (unix-socket-listen path 512))
      (make-tls-echo server-ctx)))
   (code:line)
 
