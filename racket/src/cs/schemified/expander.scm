@@ -71318,7 +71318,8 @@
                         (begin
                           (if (if as-correlated-linklet?_0
                                 as-correlated-linklet?_0
-                                (equal? vm_0 vm-bytes$1))
+                                (let ((or-part_0 (equal? vm_0 vm-bytes$1)))
+                                  (if or-part_0 or-part_0 #t)))
                             (void)
                             (let ((app_0 (bytes->string/utf-8 vm-bytes$1)))
                               (let ((app_1 (bytes->string/utf-8 vm_0 '#\x3f)))

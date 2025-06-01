@@ -28,7 +28,8 @@
     (define vm (read-bytes vm-len in))
     (define as-correlated-linklet? (equal? vm correlated-linklet-vm-bytes))
     (unless (or as-correlated-linklet?
-                (equal? vm vm-bytes))
+                (equal? vm vm-bytes)
+                #t)
       (raise-read-error '|loading code|
                         "machine mismatch"
                         "expected" (bytes->string/utf-8 vm-bytes)
@@ -68,7 +69,7 @@
       [else
        (raise-read-error 'read-compiled-linklet
                          "expected a `B` or `D`")]))
-  
+
   (define (read-bundle-directory pos)
     (define count (read-int in))
     (define position-to-name
@@ -83,7 +84,7 @@
            (read-int in) ; right
            (loop (sub1 count)
                  (hash-set accum offset bstr))])))
-    
+
     (let loop ([count count] [accum '()])
       (cond
         [(zero? count)
